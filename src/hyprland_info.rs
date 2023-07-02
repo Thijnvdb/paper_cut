@@ -1,7 +1,7 @@
 use std::{process::{Command, Stdio}, fmt::Error, str};
 use regex::Regex;
 
-use crate::domain::{MonitorInfo, Vector, FVector};
+use crate::domain::{MonitorInfo, Vector};
 
 
 pub fn get_monitors() -> Result<Vec<MonitorInfo>, Error> {
@@ -27,7 +27,6 @@ pub fn get_monitors() -> Result<Vec<MonitorInfo>, Error> {
 
     for monitor in split {
         let lines: Vec<&str> = monitor.split('\n').collect();
-        // print!("monitor: {}\n{}\n\n", lines[0], lines[1]);
 
         if lines[0].is_empty() {
             break;
@@ -80,15 +79,10 @@ fn get_monitor_info(name: &str, line: &str, transform: &str) -> Result<MonitorIn
         _ => 0,
     };
 
-    let ratio: f32 = (dimensions.x / dimensions.y).into();
-    let ratio_value: f32 = dimensions.x as f32 / ratio;
-    let position_ratio = FVector { x: position.x as f32 / ratio_value , y: position.y as f32 / ratio_value };
-
     Ok(MonitorInfo {
         name: name.to_owned(),
         position,
         rotation,
-        screen_ratio: ratio,
         dimensions,
     })
 }

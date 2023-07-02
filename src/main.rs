@@ -13,7 +13,7 @@ fn main() {
     let image_extension = get_extension(&image_path);
 
     let monitors = hyprland_info::get_monitors().expect("monitors could not be retrieved");
-    let (largest_monitor_dimensions, _largest_monitor_ratio) = get_largest_monitor_dimensions(&monitors);
+    let largest_monitor_dimensions = get_largest_monitor_dimensions(&monitors);
     let canvas = get_bounding_box(&monitors);
 
     START.call_once(|| {
@@ -82,9 +82,8 @@ fn get_bounding_box(monitors: &Vec<MonitorInfo>) -> Vector {
 
 // get size of largest monitor for converting from ratios to screen space
 // based on x value
-fn get_largest_monitor_dimensions(monitors: &Vec<MonitorInfo>) -> (Vector, f32) {
+fn get_largest_monitor_dimensions(monitors: &Vec<MonitorInfo>) -> Vector {
     let mut largest_dimensions: Vector = Vector { x: 0, y: 0 };
-    let mut largest_ratio: f32 = 0.0;
 
     for monitor in monitors {
         let x_dimension: u16;
@@ -96,11 +95,10 @@ fn get_largest_monitor_dimensions(monitors: &Vec<MonitorInfo>) -> (Vector, f32) 
 
         if x_dimension > largest_dimensions.x {
             largest_dimensions = monitor.dimensions.clone();
-            largest_ratio = monitor.screen_ratio.clone();
         }
     }
 
-    (largest_dimensions, largest_ratio)
+    largest_dimensions
 }
 
 fn cut_from_image(monitor: MonitorInfo, canvas: Vector, cut_res: Vector, image_path: &str, extension: &str) -> Result<(),()> {
